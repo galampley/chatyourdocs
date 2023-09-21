@@ -4,3 +4,4 @@ numpy
 openai
 streamlit
 matplotlib
+plotly.express
