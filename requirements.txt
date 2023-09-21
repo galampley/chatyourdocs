@@ -4,8 +4,6 @@ numpy
 openai
 streamlit
 matplotlib
-plotly.express
-sklearn.decomposition
-sklearn.manifold
-sklearn.metrics
+plotly
+scikit-learn
 tenacity
