@@ -5,4 +5,7 @@ openai
 streamlit
 matplotlib
 plotly.express
-sklearn
+sklearn.decomposition
+sklearn.manifold
+sklearn.metrics
+tenacity
