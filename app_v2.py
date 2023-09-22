@@ -48,7 +48,19 @@ def main():
     
     for uploaded_file in uploaded_files:
         st.session_state.show_read_button = True  # Reset the show_read_button state variable to True for each new file
-        file_type = uploaded_file.type.split('/')[-1]
+        
+        # Determine the file type using the file extension (Suggested Approach 1)
+        file_type = os.path.splitext(uploaded_file.name)[1][1:]
+    
+        # Optionally, you can add validation with MIME type (Suggested Approach 2)
+        mime_to_extension = {
+            'text/plain': 'txt',
+            'application/pdf': 'pdf',
+            # Add other mappings as needed
+    }
+        file_type = mime_to_extension.get(uploaded_file.type, file_type)
+        # file_type = uploaded_file.type.split('/')[-1]
+        
         read_button = st.empty() # Create an empty space for the button
 
         if st.session_state.show_read_button and read_button.button(f"Read {uploaded_file.name}"):
