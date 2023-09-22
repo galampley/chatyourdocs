@@ -40,7 +40,7 @@ def main():
     if 'show_read_button' not in st.session_state:
         st.session_state.show_read_button = True  # Initialize to True initially
 
-    st.title("Document Question Answering App")
+    st.title("ChatYourDocs")
     uploaded_files = st.file_uploader("Choose files to upload (PDF or TXT)", type=["pdf", "txt"], accept_multiple_files=True)
 
     read_files = []  # List to keep track of the names of the read files
