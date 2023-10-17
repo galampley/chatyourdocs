@@ -13,20 +13,29 @@ def create_connection():
     except Exception as e:
         raise Exception(f"Error connecting to the database: {str(e)}")
 
+def chunk_content(content, max_words=1000):
+    words = content.split()
+    chunks = []
+    for start_idx in range(0, len(words), max_words):
+        chunk = ' '.join(words[start_idx:start_idx + max_words])
+        chunks.append(chunk)
+    return chunks
+
 # Function to read PDF files and return text content
 def read_pdf(file_path):
     content_chunks = []
     pdf_file = open(file_path, 'rb')
     pdf_reader = PdfReader(pdf_file)
     for page in pdf_reader.pages:
-        content_chunks.append(page.extract_text())
+        page_content = page.extract_text()
+        content_chunks.extend(chunk_content(page_content))
     return content_chunks
 
 # Function to read TXT files and return text content
 def read_txt(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
-    return [content]
+    return chunk_content(content)
 
 # Main function to learn from a document and store text and embeddings in the SQLite database
 def learn_document(file_path, file_name, file_type):
