@@ -57,7 +57,6 @@ def learn_document(file_path, file_name, file_type):
 
     try:
         cursor.execute("INSERT INTO documents (name, type) VALUES (?, ?)", (file_name, file_type))
-        #document_id = cursor.lastrowid
 
         conn.commit()  # Commit to get the newly inserted document_id
 
@@ -105,9 +104,9 @@ def Answer_from_documents(user_query):
         context += text
 
     myMessages = [
-        {"role": "system", "content": "You're a helpful Assistant."},
-        {"role": "user", "content": f"The following is text from one or multiple documents:\n{context}\n\n If possible, answer the following user query according to the above given context. \
-            and reference the relevant document/s. If following user query is irrelevant to context, make that known and answer to best of your ability. Make sure all responses are complete and under 200 tokens. \n\nquery: {user_query}"}
+        {"role": "system", "content": "You're a helpful Assistant for question answering over my documents."},
+        {"role": "user", "content": f"The following is text from one or multiple documents:\n{context}\n\n If possible, answer the following 'query' according to the provided 'context'. \
+            Reference the name/s of the relevant document/s when 'context' is not empty. If the following user query is irrelevant to context, make that known and answer to best of your ability. Make sure all responses are complete and under 200 tokens. \n\nquery: {user_query}"}
     ]
 
     response = openai.ChatCompletion.create(
