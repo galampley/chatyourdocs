@@ -41,8 +41,10 @@ def main():
         st.session_state.show_read_button = True  # Initialize to True initially
 
     st.title("ChatYourDocs")
+    st.write("Using OpenAI models for embedding and inference. Using Sqlite db instead of vector db for easy setup since single file based and less CPU requirement.")
+    st.write("Vector db is better for similarity search as unstructured dataset gets larger and larger.")
+    
     uploaded_files = st.file_uploader("Choose files to upload (PDF or TXT)", type=["pdf", "txt"], accept_multiple_files=True)
-
     read_files = []  # List to keep track of the names of the read files
     #conversation_history = get_conversation_history()
     
