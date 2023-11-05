@@ -1,9 +1,11 @@
 import os
 import numpy as np
 import sqlite3
-from PyPDF2 import PdfReader
+# from PyPDF2 import PdfReader
 import openai
 from openai.embeddings_utils import get_embedding, cosine_similarity
+from pypdf import PdfReader
+
 
 # Function to create a connection to the SQLite database
 def create_connection():
