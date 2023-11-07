@@ -44,22 +44,12 @@ def initialize_database():
     conn.commit()
     conn.close()
 
-def save_conversation_history(conversation):
+def save_conversation_history(user_query, bot_response):
     conn = create_connection()
     cursor = conn.cursor()
-    for user_query, bot_response in conversation:
-        cursor.execute("INSERT INTO conversation (user_query, bot_response) VALUES (?, ?)", (user_query, bot_response))
+    cursor.execute("INSERT INTO conversation (user_query, bot_response) VALUES (?, ?)", (user_query, bot_response))
     conn.commit()
     conn.close()
-
-# Function to get conversation history from the database
-def get_conversation_history():
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT user_query, bot_response FROM conversation")
-    conversation_history = cursor.fetchall()
-    conn.close()
-    return conversation_history
 
 def clear_conversation_history():
     conn = sqlite3.connect("knowledgebase.db")

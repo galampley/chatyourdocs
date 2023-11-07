@@ -6,7 +6,6 @@ import openai
 from openai.embeddings_utils import get_embedding, cosine_similarity
 from pypdf import PdfReader
 
-
 # Function to create a connection to the SQLite database
 def create_connection():
     try:
@@ -84,6 +83,31 @@ def learn_document(file_path, file_name, file_type):
 
     return document_id  # Return the ID of the newly inserted document
 
+# Function to get conversation history from the database
+def get_conversation_history():
+    conn = create_connection()
+    if conn is None:
+        print("Failed to create database connection.")
+        return []
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_query, bot_response FROM conversation")
+        conversation_history = cursor.fetchall()
+        if not conversation_history:
+            print("Conversation history is empty.")
+        return conversation_history
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return []
+    finally:
+        conn.close()
+
+conversation_history = get_conversation_history()
+formatted_conversation = "\n".join([
+    f"Human: {entry[0]}\nAgent: {entry[1]}\n" for entry in conversation_history
+])
+
 # Function to answer user queries based on stored documents
 def Answer_from_documents(user_query):
     user_query_embedding_response = get_embedding(user_query, engine='text-embedding-ada-002')
@@ -106,9 +130,10 @@ def Answer_from_documents(user_query):
         context += text
 
     myMessages = [
-        {"role": "system", "content": "You're a helpful Assistant for question answering over my documents."},
+        {"role": "system", "content": f"You're a helpful Assistant for question answering over my documents.\n\nUpdated log of the user and bot chat history for conversational memory. Don't reference this unless explicitly necessary for the conversation:{formatted_conversation}."},
         {"role": "user", "content": f"The following is text from one or multiple documents:\n{context}\n\n If possible, answer the following 'query' according to the provided 'context'. \
-            Reference the name/s of the relevant document/s when 'context' is not empty. If the following user query is irrelevant to context, make that known and answer to best of your ability. Make sure all responses are complete and under 200 tokens. \n\nquery: {user_query}"}
+            Reference the name/s of the relevant document/s when 'context' is not empty. If the following user query is irrelevant to context, make that known and answer to best of your ability. \
+            Make sure all responses are complete and under 200 tokens. \n\nquery: {user_query}."}
     ]
 
     response = openai.ChatCompletion.create(
@@ -116,7 +141,9 @@ def Answer_from_documents(user_query):
         messages=myMessages,
         max_tokens=200,
     )
-    return response['choices'][0]['message']['content']
+
+    bot_response = response['choices'][0]['message']['content']
+    return bot_response
 
 # Function to save the uploaded file to the local directory (unchanged)
 def save_uploaded_file(uploaded_file):

@@ -2,7 +2,7 @@ import os
 import openai
 import streamlit as st
 from functions_v2 import save_uploaded_file, learn_document, Answer_from_documents, create_connection
-from database_v2 import initialize_database, save_conversation_history, get_conversation_history, clear_conversation_history  # Importing the database initialization function
+from database_v2 import initialize_database, save_conversation_history, clear_conversation_history  # Importing the database initialization function
 from dotenv import load_dotenv
 from custom_exceptions import LearningError, DatabaseError, verify_file_read, log_error
 
@@ -18,6 +18,7 @@ def clear_database():
     cursor = conn.cursor()
     cursor.execute("DELETE FROM documents")
     cursor.execute("DELETE FROM embeddings")
+    cursor.execute("DELETE FROM conversation")
     conn.commit()
     conn.close()
 
@@ -96,6 +97,7 @@ def main():
     if st.button("Ask"):
         if user_input:
             response = Answer_from_documents(user_input)
+            save_conversation_history(user_input, response)
             st.write(response)
             # Update conversation history in the session state
             st.session_state.conversation_history.append({"user": user_input, "bot": response})
