@@ -1,7 +1,7 @@
 ### **ChatYourDocs**
 
 #### **Introduction**
-Welcome to ChatYourDocs - a user-friendly tool designed to elevate your interaction with ChatGPT by eliminating the concerns over its context window limitations. Simply upload your documents, and the app will facilitate detailed responses to your queries based on the content of the uploaded documents.
+Welcome to ChatYourDocs - a user-friendly tool designed to elevate your interaction with ChatGPT by eliminating the concerns over its context window limitations. Simply upload your documents, and the app will facilitate detailed responses to your queries based on the content of the uploaded documents and memory of the conversation.
 
 #### **File Descriptions**
 - **app_v2.py**: This is the heart of the application, powered by Streamlit, orchestrating the user interface and functionalities.
