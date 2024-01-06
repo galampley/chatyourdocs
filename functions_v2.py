@@ -3,8 +3,14 @@ import numpy as np
 import sqlite3
 # from PyPDF2 import PdfReader
 import openai
-from openai.embeddings_utils import get_embedding, cosine_similarity
+# from openai.embeddings_utils import get_embedding, cosine_similarity
 from pypdf import PdfReader
+
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+def get_embedding(text, model="text-embedding-ada-002"): # model = "deployment_name"
+    return openai.embeddings.create(input = [text], model=model).data[0].embedding
 
 # Function to create a connection to the SQLite database
 def create_connection():
@@ -66,7 +72,7 @@ def learn_document(file_path, file_name, file_type):
         document_id = cursor.fetchone()[0]
 
         for page_number, content in enumerate(content_chunks):
-            embedding_list = get_embedding(content, engine='text-embedding-ada-002')
+            embedding_list = get_embedding(content)
             
             if len(embedding_list)!=1536:
                 raise ValueError(f"Embedding for {document_name} page {page_number} is not of shape (1536,0). Actual shape: ({len(embedding_list)},)")
@@ -110,7 +116,7 @@ formatted_conversation = "\n".join([
 
 # Function to answer user queries based on stored documents
 def Answer_from_documents(user_query):
-    user_query_embedding_response = get_embedding(user_query, engine='text-embedding-ada-002')
+    user_query_embedding_response = get_embedding(user_query)
     user_query_vector = np.array(user_query_embedding_response[:1536]) # Trim to shape (1536,)
 
     conn = create_connection()
@@ -136,13 +142,14 @@ def Answer_from_documents(user_query):
             Make sure all responses are complete and under 200 tokens. \n\nquery: {user_query}."}
     ]
 
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model='gpt-3.5-turbo',
         messages=myMessages,
         max_tokens=200,
     )
 
-    bot_response = response['choices'][0]['message']['content']
+    bot_response = response.choices[0].message.content
+    #response['choices'][0]['message']['content']
     return bot_response
 
 # Function to save the uploaded file to the local directory (unchanged)
